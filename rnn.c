@@ -12,6 +12,7 @@
 #include "mem_check.h"
 
 #define DEBUG_LAYER 0
+#define INPUT_LAYER_DATA_SIZE 5
 
 static int clocks_starts = 0;
 static size_t used_memory = 0;
@@ -19,7 +20,7 @@ static size_t used_memory = 0;
 /* f: input generator */
 static int f(int i)
 {
-    static int a[] = {5, 9, 4, 0, 5, 9, 6, 3};
+    static int a[INPUT_LAYER_DATA_SIZE] = {5, 9, 4, 0, 5, 9, 6, 3};
     return a[i % 8];
 }
 /* g: function to learn */
@@ -559,13 +560,13 @@ void RNNLayer_update(RNNLayer *self, double rate)
 /* main */
 int main(int argc, char *argv[])
 {
-    int ntimes = 5; // rnn 시간 변수
+    int ntimes = 10; // rnn 시간 변수
 
     /* Use a fixed random seed for debugging. */
     srand(0);
     printf("sizeof RNN Layers : %d", sizeof(RNNLayer));
     /* Initialize layers. */
-    RNNLayer *linput = RNNLayer_create(NULL, 10, ntimes);
+    RNNLayer *linput = RNNLayer_create(NULL, INPUT_LAYER_DATA_SIZE, ntimes);
     RNNLayer *lhidden = RNNLayer_create(linput, 3, ntimes);
     RNNLayer *loutput = RNNLayer_create(lhidden, 1, ntimes);
     RNNLayer_dump(linput, stderr);
@@ -576,11 +577,11 @@ int main(int argc, char *argv[])
 
     /* Run the network. */
     double rate = 0.005;
-    int nepochs = 100;
+    int nepochs = 1;
     for (int n = 0; n < nepochs; n++)
     {
         int i = rand() % 10000;
-        double x[10];
+        double x[INPUT_LAYER_DATA_SIZE];
         double y[1];
         double r[1];
         RNNLayer_reset(linput);
@@ -590,7 +591,7 @@ int main(int argc, char *argv[])
         for (int j = 0; j < 20; j++)
         {
             int p = f(i);
-            for (int k = 0; k < 10; k++)
+            for (int k = 0; k < INPUT_LAYER_DATA_SIZE; k++)
             {
                 x[k] = (k == p) ? 1 : 0;
             }
@@ -618,12 +619,12 @@ int main(int argc, char *argv[])
     RNNLayer_reset(linput);
     RNNLayer_reset(lhidden);
     RNNLayer_reset(loutput);
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 30; i++)
     {
-        double x[10];
+        double x[INPUT_LAYER_DATA_SIZE];
         double y[1];
         int p = f(i);
-        for (int k = 0; k < 10; k++)
+        for (int k = 0; k < INPUT_LAYER_DATA_SIZE; k++)
         {
             x[k] = (k == p) ? 1 : 0;
         }

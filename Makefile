@@ -49,6 +49,11 @@ mem_test_rnn: rnn.o mem_check.o
 	./mem_test_rnn
 	gprof mem_test_rnn gmon.out > result_mem_test_rnn.txt
 
+./rnn_dev: rnn_dev.o mem_check.o
+	gcc -pg -o rnn_dev rnn_dev.o mem_check.o -lm
+	./rnn_dev
+	gprof rnn_dev gmon.out > rnn_dev.txt
+
 mem_test_mnist: mem_check.o cnn.o mnist.o
 	gcc -pg -o mem_test_mnist mem_check.o cnn.o mnist.o -lm
 	./mem_test_mnist $(MNIST_FILES)
@@ -62,6 +67,9 @@ bnn.o: mem_check.h bnn.c
 
 rnn.o: mem_check.h rnn.c
 	gcc -pg -c -o rnn.o rnn.c
+
+rnn_dev.o: mem_check.h rnn_dev.c
+	gcc -pg -c -o rnn_dev.o rnn_dev.c
 
 cnn.o: mem_check.h cnn.c
 	gcc -pg -c -o cnn.o cnn.c
