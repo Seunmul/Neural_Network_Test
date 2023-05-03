@@ -61,7 +61,6 @@ static inline double tanh_g(double y)
 
 typedef struct _RNNLayer
 {
-
     int lid;                 /* Layer ID */
     struct _RNNLayer *lprev; /* Previous Layer */
     struct _RNNLayer *lnext; /* Next Layer */
@@ -560,52 +559,56 @@ void RNNLayer_update(RNNLayer *self, double rate)
 /* main */
 int main(int argc, char *argv[])
 {
-    int ntimes = 5;
+    int ntimes = 5; // rnn 시간 변수
 
     /* Use a fixed random seed for debugging. */
     srand(0);
+    printf("sizeof RNN Layers : %d", sizeof(RNNLayer));
     /* Initialize layers. */
-    RNNLayer *linput = RNNLayer_create(NULL, 16, ntimes);
+    RNNLayer *linput = RNNLayer_create(NULL, 10, ntimes);
     RNNLayer *lhidden = RNNLayer_create(linput, 3, ntimes);
     RNNLayer *loutput = RNNLayer_create(lhidden, 1, ntimes);
     RNNLayer_dump(linput, stderr);
     RNNLayer_dump(lhidden, stderr);
     RNNLayer_dump(loutput, stderr);
-
     /* Time Checking*/
     reset_timer(clocks_starts);
 
     /* Run the network. */
     double rate = 0.005;
-    int nepochs = 1;
+    int nepochs = 100;
     for (int n = 0; n < nepochs; n++)
     {
         int i = rand() % 10000;
-        double x[16];
+        double x[10];
         double y[1];
         double r[1];
         RNNLayer_reset(linput);
         RNNLayer_reset(lhidden);
         RNNLayer_reset(loutput);
-        fprintf(stderr, "reset: i=%d\n", i);
-        for (int j = 0; j < 1; j++)
+        // fprintf(stderr, "reset: i=%d\n", i);
+        for (int j = 0; j < 20; j++)
         {
             int p = f(i);
             for (int k = 0; k < 10; k++)
             {
                 x[k] = (k == p) ? 1 : 0;
             }
-            r[0] = g(i); /* answer */
-            RNNLayer_setInputs(linput, x);
-            RNNLayer_getOutputs(loutput, y);
-            RNNLayer_learnOutputs(loutput, r);
+            r[0] = g(i);                       /* answer */
+            RNNLayer_setInputs(linput, x);     // 순전파 알고리즘 동작
+            RNNLayer_getOutputs(loutput, y);   // 순전파 알고리즘 동작 후 결과값 저장
+            RNNLayer_learnOutputs(loutput, r); // 역전파 알고리즘 동작 => 에러 체크
             double etotal = RNNLayer_getErrorTotal(loutput);
-            fprintf(stderr, "x[%d]=%d, y=%.4f, r=%.4f, etotal=%.4f\n",
-                    i, p, y[0], r[0], etotal);
+            // fprintf(stderr, "x[%d]=%d, y=%.4f, r=%.4f, etotal=%.4f\n",
+            //         i, p, y[0], r[0], etotal);
             i++;
         }
-        RNNLayer_update(loutput, rate);
+        RNNLayer_update(loutput, rate); // 러닝 레이트에 따라 가중치와 편향값 조정
     }
+
+    /* Time Checking*/
+    show_elapsed_time_in_sec(clocks_starts);
+    printf("\nUsed Memory : %ld bytes\n\n", used_memory_in_bytes(used_memory));
 
     /* Dump the finished network. */
     RNNLayer_dump(linput, stdout);
@@ -628,10 +631,6 @@ int main(int argc, char *argv[])
         RNNLayer_getOutputs(loutput, y);
         fprintf(stderr, "x[%d]=%d, y=%.4f, %.4f\n", i, p, y[0], g(i));
     }
-
-    /* Time Checking*/
-    show_elapsed_time_in_sec(clocks_starts);
-    printf("\nUsed Memory : %ld bytes\n\n", used_memory_in_bytes(used_memory));
 
     RNNLayer_destroy(linput);
     RNNLayer_destroy(lhidden);
