@@ -20,7 +20,7 @@ static size_t used_memory = 0;
 /* f: input generator */
 static int f(int i)
 {
-    static int a[INPUT_LAYER_DATA_SIZE] = {5, 9, 4, 0, 5, 9, 6, 3};
+    static int a[] = {5, 9, 4, 0, 5, 9, 6, 3, 1, 2};
     return a[i % 8];
 }
 /* g: function to learn */
@@ -560,7 +560,7 @@ void RNNLayer_update(RNNLayer *self, double rate)
 /* main */
 int main(int argc, char *argv[])
 {
-    int ntimes = 3; // rnn 시간 변수
+    int ntimes = 5; // rnn 시간 변수
 
     /* Use a fixed random seed for debugging. */
     srand(0);
@@ -581,7 +581,7 @@ int main(int argc, char *argv[])
 
     /* Run the network. */
     double rate = 0.005;
-    int nepochs = 8000;
+    int nepochs = 1000;
     for (int n = 0; n < nepochs; n++)
     {
         int i = rand() % 10000;
@@ -612,14 +612,14 @@ int main(int argc, char *argv[])
             double etotal = RNNLayer_getErrorTotal(loutput);
             // fprintf(stderr, "x[%d]=%d, y=%.4f, r=%.4f, etotal=%.4f\n",
             //         i, p, y1[0], r[0], etotal);
-            fprintf(stderr, "x[%d]=%d, ", i, p);
+            // fprintf(stderr, "x[%d]=%d, ", i, p);
             // for (int i = 0; i < 16; i++)
             //     fprintf(stderr, "y1[%d]=%.4f, ", i, y1[i]);
             // for (int i = 0; i < 16; i++)
             //     fprintf(stderr, "y2[%d]=%.4f, ", i, y2[i]);
             // for (int i = 0; i < 16; i++)
             //     fprintf(stderr, "y3[%d]=%.4f, ", i, y3[i]);
-            fprintf(stderr, "r=%.4f, etotal=%.4f\n", r[0], etotal);
+            // fprintf(stderr, "r=%.4f, etotal=%.4f\n", r[0], etotal);
             i++;
         }
         RNNLayer_update(loutput, rate); // 러닝 레이트에 따라 가중치와 편향값 조정
@@ -630,7 +630,7 @@ int main(int argc, char *argv[])
     printf("\nUsed Memory : %ld bytes\n\n", used_memory_in_bytes(used_memory));
 
     fprintf(stderr, "Training finished.\n starts dumping and testing...\n");
-    // /* Dump the finished network. */
+    /* Dump the finished network. */
     RNNLayer_dump(linput, stdout);
     RNNLayer_dump(lhidden1, stdout);
     RNNLayer_dump(lhidden2, stdout);

@@ -3,27 +3,26 @@ Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
  time   seconds   seconds    calls  us/call  us/call  name    
- 71.53      2.94     2.94   800000     3.67     3.70  RNNLayer_feedBack
- 26.28      4.02     1.08   640120     1.69     1.69  RNNLayer_feedForw
-  0.73      4.05     0.03   160030     0.19     6.94  RNNLayer_setInputs
-  0.49      4.07     0.02 23520000     0.00     0.00  tanh_g
-  0.49      4.09     0.02     8000     2.50     2.50  RNNLayer_update
-  0.49      4.11     0.02                             main
-  0.00      4.11     0.00   480030     0.00     0.00  RNNLayer_getOutputs
-  0.00      4.11     0.00   160030     0.00     0.00  f
-  0.00      4.11     0.00   160030     0.00     0.00  g
-  0.00      4.11     0.00   160000     0.00     0.00  RNNLayer_getErrorTotal
-  0.00      4.11     0.00   160000     0.00    18.50  RNNLayer_learnOutputs
-  0.00      4.11     0.00    40005     0.00     0.00  RNNLayer_reset
-  0.00      4.11     0.00     5828     0.00     0.00  rnd
-  0.00      4.11     0.00     1457     0.00     0.00  nrnd
-  0.00      4.11     0.00       44     0.00     0.00  calloc_c
-  0.00      4.11     0.00       10     0.00     0.00  RNNLayer_dump
-  0.00      4.11     0.00        5     0.00     0.00  RNNLayer_create
-  0.00      4.11     0.00        3     0.00     0.00  RNNLayer_destroy
-  0.00      4.11     0.00        1     0.00     0.00  reset_timer
-  0.00      4.11     0.00        1     0.00     0.00  show_elapsed_time_in_sec
-  0.00      4.11     0.00        1     0.00     0.00  used_memory_in_bytes
+ 83.05      0.78     0.78   100000     7.81     7.81  RNNLayer_feedBack
+ 15.97      0.93     0.15    80120     1.87     1.87  RNNLayer_feedForw
+  1.06      0.94     0.01    20030     0.50     8.00  RNNLayer_setInputs
+  0.00      0.94     0.00  4900000     0.00     0.00  tanh_g
+  0.00      0.94     0.00    60030     0.00     0.00  RNNLayer_getOutputs
+  0.00      0.94     0.00    20030     0.00     0.00  f
+  0.00      0.94     0.00    20030     0.00     0.00  g
+  0.00      0.94     0.00    20000     0.00     0.00  RNNLayer_getErrorTotal
+  0.00      0.94     0.00    20000     0.00    39.03  RNNLayer_learnOutputs
+  0.00      0.94     0.00     5828     0.00     0.00  rnd
+  0.00      0.94     0.00     5005     0.00     0.00  RNNLayer_reset
+  0.00      0.94     0.00     1457     0.00     0.00  nrnd
+  0.00      0.94     0.00     1000     0.00     0.00  RNNLayer_update
+  0.00      0.94     0.00       44     0.00     0.00  calloc_c
+  0.00      0.94     0.00       10     0.00     0.00  RNNLayer_dump
+  0.00      0.94     0.00        5     0.00     0.00  RNNLayer_create
+  0.00      0.94     0.00        3     0.00     0.00  RNNLayer_destroy
+  0.00      0.94     0.00        1     0.00     0.00  reset_timer
+  0.00      0.94     0.00        1     0.00     0.00  show_elapsed_time_in_sec
+  0.00      0.94     0.00        1     0.00     0.00  used_memory_in_bytes
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -61,19 +60,19 @@ notice and this notice are preserved.
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 4 byte(s) for 0.24% of 4.11 seconds
+granularity: each sample hit covers 2 byte(s) for 1.06% of 0.94 seconds
 
 index % time    self  children    called     name
                                                  <spontaneous>
-[1]    100.0    0.02    4.09                 main [1]
-                0.00    2.96  160000/160000      RNNLayer_learnOutputs [3]
-                0.03    1.08  160030/160030      RNNLayer_setInputs [4]
-                0.02    0.00    8000/8000        RNNLayer_update [7]
-                0.00    0.00  480030/480030      RNNLayer_getOutputs [8]
-                0.00    0.00  160030/160030      f [9]
-                0.00    0.00  160030/160030      g [10]
-                0.00    0.00  160000/160000      RNNLayer_getErrorTotal [11]
-                0.00    0.00   40005/40005       RNNLayer_reset [12]
+[1]    100.0    0.00    0.94                 main [1]
+                0.00    0.78   20000/20000       RNNLayer_learnOutputs [3]
+                0.01    0.15   20030/20030       RNNLayer_setInputs [4]
+                0.00    0.00   60030/60030       RNNLayer_getOutputs [7]
+                0.00    0.00   20030/20030       f [8]
+                0.00    0.00   20030/20030       g [9]
+                0.00    0.00   20000/20000       RNNLayer_getErrorTotal [10]
+                0.00    0.00    5005/5005        RNNLayer_reset [12]
+                0.00    0.00    1000/1000        RNNLayer_update [14]
                 0.00    0.00      10/10          RNNLayer_dump [16]
                 0.00    0.00       5/5           RNNLayer_create [17]
                 0.00    0.00       3/3           RNNLayer_destroy [18]
@@ -81,50 +80,50 @@ index % time    self  children    called     name
                 0.00    0.00       1/1           show_elapsed_time_in_sec [20]
                 0.00    0.00       1/1           used_memory_in_bytes [21]
 -----------------------------------------------
-                2.94    0.02  800000/800000      RNNLayer_learnOutputs [3]
-[2]     72.0    2.94    0.02  800000         RNNLayer_feedBack [2]
-                0.02    0.00 23520000/23520000     tanh_g [6]
+                0.78    0.00  100000/100000      RNNLayer_learnOutputs [3]
+[2]     83.0    0.78    0.00  100000         RNNLayer_feedBack [2]
+                0.00    0.00 4900000/4900000     tanh_g [6]
 -----------------------------------------------
-                0.00    2.96  160000/160000      main [1]
-[3]     72.0    0.00    2.96  160000         RNNLayer_learnOutputs [3]
-                2.94    0.02  800000/800000      RNNLayer_feedBack [2]
+                0.00    0.78   20000/20000       main [1]
+[3]     83.0    0.00    0.78   20000         RNNLayer_learnOutputs [3]
+                0.78    0.00  100000/100000      RNNLayer_feedBack [2]
 -----------------------------------------------
-                0.03    1.08  160030/160030      main [1]
-[4]     27.0    0.03    1.08  160030         RNNLayer_setInputs [4]
-                1.08    0.00  640120/640120      RNNLayer_feedForw [5]
+                0.01    0.15   20030/20030       main [1]
+[4]     17.0    0.01    0.15   20030         RNNLayer_setInputs [4]
+                0.15    0.00   80120/80120       RNNLayer_feedForw [5]
 -----------------------------------------------
-                1.08    0.00  640120/640120      RNNLayer_setInputs [4]
-[5]     26.3    1.08    0.00  640120         RNNLayer_feedForw [5]
+                0.15    0.00   80120/80120       RNNLayer_setInputs [4]
+[5]     16.0    0.15    0.00   80120         RNNLayer_feedForw [5]
 -----------------------------------------------
-                0.02    0.00 23520000/23520000     RNNLayer_feedBack [2]
-[6]      0.5    0.02    0.00 23520000         tanh_g [6]
+                0.00    0.00 4900000/4900000     RNNLayer_feedBack [2]
+[6]      0.0    0.00    0.00 4900000         tanh_g [6]
 -----------------------------------------------
-                               32000             RNNLayer_update [7]
-                0.02    0.00    8000/8000        main [1]
-[7]      0.5    0.02    0.00    8000+32000   RNNLayer_update [7]
-                               32000             RNNLayer_update [7]
+                0.00    0.00   60030/60030       main [1]
+[7]      0.0    0.00    0.00   60030         RNNLayer_getOutputs [7]
 -----------------------------------------------
-                0.00    0.00  480030/480030      main [1]
-[8]      0.0    0.00    0.00  480030         RNNLayer_getOutputs [8]
+                0.00    0.00   20030/20030       main [1]
+[8]      0.0    0.00    0.00   20030         f [8]
 -----------------------------------------------
-                0.00    0.00  160030/160030      main [1]
-[9]      0.0    0.00    0.00  160030         f [9]
+                0.00    0.00   20030/20030       main [1]
+[9]      0.0    0.00    0.00   20030         g [9]
 -----------------------------------------------
-                0.00    0.00  160030/160030      main [1]
-[10]     0.0    0.00    0.00  160030         g [10]
+                0.00    0.00   20000/20000       main [1]
+[10]     0.0    0.00    0.00   20000         RNNLayer_getErrorTotal [10]
 -----------------------------------------------
-                0.00    0.00  160000/160000      main [1]
-[11]     0.0    0.00    0.00  160000         RNNLayer_getErrorTotal [11]
+                0.00    0.00    5828/5828        nrnd [13]
+[11]     0.0    0.00    0.00    5828         rnd [11]
 -----------------------------------------------
-                0.00    0.00   40005/40005       main [1]
-[12]     0.0    0.00    0.00   40005         RNNLayer_reset [12]
------------------------------------------------
-                0.00    0.00    5828/5828        nrnd [14]
-[13]     0.0    0.00    0.00    5828         rnd [13]
+                0.00    0.00    5005/5005        main [1]
+[12]     0.0    0.00    0.00    5005         RNNLayer_reset [12]
 -----------------------------------------------
                 0.00    0.00    1457/1457        RNNLayer_create [17]
-[14]     0.0    0.00    0.00    1457         nrnd [14]
-                0.00    0.00    5828/5828        rnd [13]
+[13]     0.0    0.00    0.00    1457         nrnd [13]
+                0.00    0.00    5828/5828        rnd [11]
+-----------------------------------------------
+                                4000             RNNLayer_update [14]
+                0.00    0.00    1000/1000        main [1]
+[14]     0.0    0.00    0.00    1000+4000    RNNLayer_update [14]
+                                4000             RNNLayer_update [14]
 -----------------------------------------------
                 0.00    0.00      44/44          RNNLayer_create [17]
 [15]     0.0    0.00    0.00      44         calloc_c [15]
@@ -134,7 +133,7 @@ index % time    self  children    called     name
 -----------------------------------------------
                 0.00    0.00       5/5           main [1]
 [17]     0.0    0.00    0.00       5         RNNLayer_create [17]
-                0.00    0.00    1457/1457        nrnd [14]
+                0.00    0.00    1457/1457        nrnd [13]
                 0.00    0.00      44/44          calloc_c [15]
 -----------------------------------------------
                 0.00    0.00       3/3           main [1]
@@ -240,10 +239,10 @@ notice and this notice are preserved.
 
 Index by function name
 
-  [17] RNNLayer_create         [3] RNNLayer_learnOutputs   [1] main
-  [18] RNNLayer_destroy       [12] RNNLayer_reset         [14] nrnd
-  [16] RNNLayer_dump           [4] RNNLayer_setInputs     [19] reset_timer
-   [2] RNNLayer_feedBack       [7] RNNLayer_update        [13] rnd
-   [5] RNNLayer_feedForw      [15] calloc_c               [20] show_elapsed_time_in_sec
-  [11] RNNLayer_getErrorTotal  [9] f                       [6] tanh_g
-   [8] RNNLayer_getOutputs    [10] g                      [21] used_memory_in_bytes
+  [17] RNNLayer_create         [3] RNNLayer_learnOutputs  [13] nrnd
+  [18] RNNLayer_destroy       [12] RNNLayer_reset         [19] reset_timer
+  [16] RNNLayer_dump           [4] RNNLayer_setInputs     [11] rnd
+   [2] RNNLayer_feedBack      [14] RNNLayer_update        [20] show_elapsed_time_in_sec
+   [5] RNNLayer_feedForw      [15] calloc_c                [6] tanh_g
+  [10] RNNLayer_getErrorTotal  [8] f                      [21] used_memory_in_bytes
+   [7] RNNLayer_getOutputs     [9] g
