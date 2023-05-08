@@ -17,7 +17,7 @@ MNIST_FILES= \
 all: test_bnn
 
 clean:
-	-$(RM) ./bnn ./mnist ./rnn *.o
+	-$(RM) ./bnn ./mnist ./rnn ./rnn_dev ./mem_test_rnn ./mem_test_bnn gmon.out *.o
 
 get_mnist:
 	-mkdir ./data
@@ -29,12 +29,14 @@ get_mnist:
 		$(GZIP) -dc > ./data/t10k-images-idx3-ubyte
 	-$(CURL) http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz | \
 		$(GZIP) -dc > ./data/t10k-labels-idx1-ubyte
-
-test_bnn: ./bnn
-	./bnn
 	
 ./bnn: bnn.c
 	$(CC) -o $@ $^ $(LIBS)
+
+./rnn_dev: rnn_dev.o mem_check.o
+	gcc -pg -o rnn_dev rnn_dev.o mem_check.o -lm
+	./rnn_dev
+	gprof rnn_dev gmon.out > rnn_dev.txt
 
 valgrind_test_mnist:
 	valgrind ./mem_test_mnist $(MNIST_FILES)
@@ -48,11 +50,6 @@ mem_test_rnn: rnn.o mem_check.o
 	gcc -pg -o mem_test_rnn rnn.o mem_check.o -lm
 	./mem_test_rnn
 	gprof mem_test_rnn gmon.out > result_mem_test_rnn.txt
-
-./rnn_dev: rnn_dev.o mem_check.o
-	gcc -pg -o rnn_dev rnn_dev.o mem_check.o -lm
-	./rnn_dev
-	gprof rnn_dev gmon.out > rnn_dev.txt
 
 mem_test_mnist: mem_check.o cnn.o mnist.o
 	gcc -pg -o mem_test_mnist mem_check.o cnn.o mnist.o -lm

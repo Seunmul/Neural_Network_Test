@@ -1,27 +1,29 @@
 Flat profile:
 
 Each sample counts as 0.01 seconds.
+ no time accumulated
+
   %   cumulative   self              self     total           
- time   seconds   seconds    calls  us/call  us/call  name    
-100.00      0.01     0.01    10000     1.00     1.00  Layer_setInputs
-  0.00      0.01     0.00    40000     0.00     0.00  sigmoid
-  0.00      0.01     0.00    40000     0.00     0.00  sigmoid_g
-  0.00      0.01     0.00    20036     0.00     0.00  rnd
-  0.00      0.01     0.00    20000     0.00     0.00  Layer_feedBack
-  0.00      0.01     0.00    20000     0.00     0.00  Layer_feedForw
-  0.00      0.01     0.00    10000     0.00     0.00  Layer_getErrorTotal
-  0.00      0.01     0.00    10000     0.00     0.00  Layer_getOutputs
-  0.00      0.01     0.00    10000     0.00     0.00  Layer_learnOutputs
-  0.00      0.01     0.00    10000     0.00     0.00  Layer_update
-  0.00      0.01     0.00    10000     0.00     0.00  f
-  0.00      0.01     0.00       20     0.00     0.00  calloc_c
-  0.00      0.01     0.00        9     0.00     0.00  nrnd
-  0.00      0.01     0.00        6     0.00     0.00  Layer_dump
-  0.00      0.01     0.00        3     0.00     0.00  Layer_create
-  0.00      0.01     0.00        3     0.00     0.00  Layer_destroy
-  0.00      0.01     0.00        2     0.00     0.00  used_memory_in_bytes
-  0.00      0.01     0.00        1     0.00     0.00  reset_timer
-  0.00      0.01     0.00        1     0.00     0.00  show_elapsed_time_in_sec
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+  0.00      0.00     0.00    40000     0.00     0.00  sigmoid
+  0.00      0.00     0.00    40000     0.00     0.00  sigmoid_g
+  0.00      0.00     0.00    20036     0.00     0.00  rnd
+  0.00      0.00     0.00    20000     0.00     0.00  Layer_feedBack
+  0.00      0.00     0.00    20000     0.00     0.00  Layer_feedForw
+  0.00      0.00     0.00    10000     0.00     0.00  Layer_getErrorTotal
+  0.00      0.00     0.00    10000     0.00     0.00  Layer_getOutputs
+  0.00      0.00     0.00    10000     0.00     0.00  Layer_learnOutputs
+  0.00      0.00     0.00    10000     0.00     0.00  Layer_setInputs
+  0.00      0.00     0.00    10000     0.00     0.00  Layer_update
+  0.00      0.00     0.00    10000     0.00     0.00  f
+  0.00      0.00     0.00       20     0.00     0.00  calloc_c
+  0.00      0.00     0.00        9     0.00     0.00  nrnd
+  0.00      0.00     0.00        6     0.00     0.00  Layer_dump
+  0.00      0.00     0.00        3     0.00     0.00  Layer_create
+  0.00      0.00     0.00        3     0.00     0.00  Layer_destroy
+  0.00      0.00     0.00        2     0.00     0.00  used_memory_in_bytes
+  0.00      0.00     0.00        1     0.00     0.00  reset_timer
+  0.00      0.00     0.00        1     0.00     0.00  show_elapsed_time_in_sec
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -59,91 +61,75 @@ notice and this notice are preserved.
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 4 byte(s) for 100.00% of 0.01 seconds
+granularity: each sample hit covers 4 byte(s) no time propagated
 
 index % time    self  children    called     name
-                0.01    0.00   10000/10000       main [2]
-[1]    100.0    0.01    0.00   10000         Layer_setInputs [1]
-                0.00    0.00   20000/20000       Layer_feedForw [7]
+                0.00    0.00   40000/40000       Layer_feedForw [5]
+[1]      0.0    0.00    0.00   40000         sigmoid [1]
 -----------------------------------------------
-                                                 <spontaneous>
-[2]    100.0    0.00    0.01                 main [2]
-                0.01    0.00   10000/10000       Layer_setInputs [1]
-                0.00    0.00   20000/20036       rnd [5]
-                0.00    0.00   10000/10000       f [12]
-                0.00    0.00   10000/10000       Layer_getOutputs [9]
-                0.00    0.00   10000/10000       Layer_getErrorTotal [8]
-                0.00    0.00   10000/10000       Layer_learnOutputs [10]
-                0.00    0.00   10000/10000       Layer_update [11]
-                0.00    0.00       6/6           Layer_dump [15]
-                0.00    0.00       3/3           Layer_create [16]
-                0.00    0.00       3/3           Layer_destroy [17]
-                0.00    0.00       2/2           used_memory_in_bytes [18]
-                0.00    0.00       1/1           reset_timer [19]
-                0.00    0.00       1/1           show_elapsed_time_in_sec [20]
+                0.00    0.00   40000/40000       Layer_feedForw [5]
+[2]      0.0    0.00    0.00   40000         sigmoid_g [2]
 -----------------------------------------------
-                0.00    0.00   40000/40000       Layer_feedForw [7]
-[3]      0.0    0.00    0.00   40000         sigmoid [3]
+                0.00    0.00      36/20036       nrnd [13]
+                0.00    0.00   20000/20036       main [27]
+[3]      0.0    0.00    0.00   20036         rnd [3]
 -----------------------------------------------
-                0.00    0.00   40000/40000       Layer_feedForw [7]
-[4]      0.0    0.00    0.00   40000         sigmoid_g [4]
+                0.00    0.00   20000/20000       Layer_learnOutputs [8]
+[4]      0.0    0.00    0.00   20000         Layer_feedBack [4]
 -----------------------------------------------
-                0.00    0.00      36/20036       nrnd [14]
-                0.00    0.00   20000/20036       main [2]
-[5]      0.0    0.00    0.00   20036         rnd [5]
+                0.00    0.00   20000/20000       Layer_setInputs [9]
+[5]      0.0    0.00    0.00   20000         Layer_feedForw [5]
+                0.00    0.00   40000/40000       sigmoid [1]
+                0.00    0.00   40000/40000       sigmoid_g [2]
 -----------------------------------------------
-                0.00    0.00   20000/20000       Layer_learnOutputs [10]
-[6]      0.0    0.00    0.00   20000         Layer_feedBack [6]
+                0.00    0.00   10000/10000       main [27]
+[6]      0.0    0.00    0.00   10000         Layer_getErrorTotal [6]
 -----------------------------------------------
-                0.00    0.00   20000/20000       Layer_setInputs [1]
-[7]      0.0    0.00    0.00   20000         Layer_feedForw [7]
-                0.00    0.00   40000/40000       sigmoid [3]
-                0.00    0.00   40000/40000       sigmoid_g [4]
+                0.00    0.00   10000/10000       main [27]
+[7]      0.0    0.00    0.00   10000         Layer_getOutputs [7]
 -----------------------------------------------
-                0.00    0.00   10000/10000       main [2]
-[8]      0.0    0.00    0.00   10000         Layer_getErrorTotal [8]
+                0.00    0.00   10000/10000       main [27]
+[8]      0.0    0.00    0.00   10000         Layer_learnOutputs [8]
+                0.00    0.00   20000/20000       Layer_feedBack [4]
 -----------------------------------------------
-                0.00    0.00   10000/10000       main [2]
-[9]      0.0    0.00    0.00   10000         Layer_getOutputs [9]
+                0.00    0.00   10000/10000       main [27]
+[9]      0.0    0.00    0.00   10000         Layer_setInputs [9]
+                0.00    0.00   20000/20000       Layer_feedForw [5]
 -----------------------------------------------
-                0.00    0.00   10000/10000       main [2]
-[10]     0.0    0.00    0.00   10000         Layer_learnOutputs [10]
-                0.00    0.00   20000/20000       Layer_feedBack [6]
+                               20000             Layer_update [10]
+                0.00    0.00   10000/10000       main [27]
+[10]     0.0    0.00    0.00   10000+20000   Layer_update [10]
+                               20000             Layer_update [10]
 -----------------------------------------------
-                               20000             Layer_update [11]
-                0.00    0.00   10000/10000       main [2]
-[11]     0.0    0.00    0.00   10000+20000   Layer_update [11]
-                               20000             Layer_update [11]
+                0.00    0.00   10000/10000       main [27]
+[11]     0.0    0.00    0.00   10000         f [11]
 -----------------------------------------------
-                0.00    0.00   10000/10000       main [2]
-[12]     0.0    0.00    0.00   10000         f [12]
+                0.00    0.00      20/20          Layer_create [15]
+[12]     0.0    0.00    0.00      20         calloc_c [12]
 -----------------------------------------------
-                0.00    0.00      20/20          Layer_create [16]
-[13]     0.0    0.00    0.00      20         calloc_c [13]
+                0.00    0.00       9/9           Layer_create [15]
+[13]     0.0    0.00    0.00       9         nrnd [13]
+                0.00    0.00      36/20036       rnd [3]
 -----------------------------------------------
-                0.00    0.00       9/9           Layer_create [16]
-[14]     0.0    0.00    0.00       9         nrnd [14]
-                0.00    0.00      36/20036       rnd [5]
+                0.00    0.00       6/6           main [27]
+[14]     0.0    0.00    0.00       6         Layer_dump [14]
 -----------------------------------------------
-                0.00    0.00       6/6           main [2]
-[15]     0.0    0.00    0.00       6         Layer_dump [15]
+                0.00    0.00       3/3           main [27]
+[15]     0.0    0.00    0.00       3         Layer_create [15]
+                0.00    0.00      20/20          calloc_c [12]
+                0.00    0.00       9/9           nrnd [13]
 -----------------------------------------------
-                0.00    0.00       3/3           main [2]
-[16]     0.0    0.00    0.00       3         Layer_create [16]
-                0.00    0.00      20/20          calloc_c [13]
-                0.00    0.00       9/9           nrnd [14]
+                0.00    0.00       3/3           main [27]
+[16]     0.0    0.00    0.00       3         Layer_destroy [16]
 -----------------------------------------------
-                0.00    0.00       3/3           main [2]
-[17]     0.0    0.00    0.00       3         Layer_destroy [17]
+                0.00    0.00       2/2           main [27]
+[17]     0.0    0.00    0.00       2         used_memory_in_bytes [17]
 -----------------------------------------------
-                0.00    0.00       2/2           main [2]
-[18]     0.0    0.00    0.00       2         used_memory_in_bytes [18]
+                0.00    0.00       1/1           main [27]
+[18]     0.0    0.00    0.00       1         reset_timer [18]
 -----------------------------------------------
-                0.00    0.00       1/1           main [2]
-[19]     0.0    0.00    0.00       1         reset_timer [19]
------------------------------------------------
-                0.00    0.00       1/1           main [2]
-[20]     0.0    0.00    0.00       1         show_elapsed_time_in_sec [20]
+                0.00    0.00       1/1           main [27]
+[19]     0.0    0.00    0.00       1         show_elapsed_time_in_sec [19]
 -----------------------------------------------
 
  This table describes the call tree of the program, and was sorted by
@@ -236,10 +222,10 @@ notice and this notice are preserved.
 
 Index by function name
 
-  [16] Layer_create           [10] Layer_learnOutputs      [5] rnd
-  [17] Layer_destroy           [1] Layer_setInputs        [20] show_elapsed_time_in_sec
-  [15] Layer_dump             [11] Layer_update            [3] sigmoid
-   [6] Layer_feedBack         [13] calloc_c                [4] sigmoid_g
-   [7] Layer_feedForw         [12] f                      [18] used_memory_in_bytes
-   [8] Layer_getErrorTotal    [14] nrnd
-   [9] Layer_getOutputs       [19] reset_timer
+  [15] Layer_create            [8] Layer_learnOutputs      [3] rnd
+  [16] Layer_destroy           [9] Layer_setInputs        [19] show_elapsed_time_in_sec
+  [14] Layer_dump             [10] Layer_update            [1] sigmoid
+   [4] Layer_feedBack         [12] calloc_c                [2] sigmoid_g
+   [5] Layer_feedForw         [11] f                      [17] used_memory_in_bytes
+   [6] Layer_getErrorTotal    [13] nrnd
+   [7] Layer_getOutputs       [18] reset_timer

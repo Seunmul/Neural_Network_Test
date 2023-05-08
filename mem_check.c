@@ -37,7 +37,7 @@ void show_elapsed_time_in_sec(int clocks_starts)
 {
   double t;
   t = ((double)(clock() - clocks_starts)) / CLOCKS_PER_SEC;
-  printf("\n\nTime used: %f sec\n\n", t);
+  printf("Time used : %f sec\n", t);
 }
 
 /*

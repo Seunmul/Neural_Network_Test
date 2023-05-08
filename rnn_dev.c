@@ -12,7 +12,14 @@
 #include "mem_check.h"
 
 #define DEBUG_LAYER 0
+
 #define INPUT_LAYER_DATA_SIZE 10
+#define HIDDEN_LAYER_DATA_SIZE 16
+#define OUTPUT_LAYER_DATA_SIZE 10
+#define MODEL_SEQUNCE 5
+#define LEARNING_RATE 0.001
+#define EPOCHS 15000
+#define MINIBATCH 50
 
 static int clocks_starts = 0;
 static size_t used_memory = 0;
@@ -20,13 +27,13 @@ static size_t used_memory = 0;
 /* f: input generator */
 static int f(int i)
 {
-    static int a[] = {5, 9, 4, 0, 5, 9, 6, 3, 1, 2};
-    return a[i % 8];
+    static int a[] = {5, 9, 4, 0, 5, 9, 6, 3, 0, 2};
+    return a[i % INPUT_LAYER_DATA_SIZE];
 }
 /* g: function to learn */
 static double g(int i)
 {
-    return ((i % 8) == 4) ? 1 : 0;
+    return ((i % INPUT_LAYER_DATA_SIZE) == 4) ? 1 : 0;
 }
 
 /*  Misc. functions
@@ -57,9 +64,7 @@ static inline double tanh_g(double y)
     return 1.0 - y * y;
 }
 
-/*  RNNLayer
- */
-
+/*  RNNLayer */
 typedef struct _RNNLayer
 {
     int lid;                 /* Layer ID */
@@ -67,7 +72,7 @@ typedef struct _RNNLayer
     struct _RNNLayer *lnext; /* Next Layer */
 
     int nnodes; /* Num. of Nodes */
-    int ntimes; /* Num. of Times */
+    int ntimes; /* Num. of Times ==> sequences */
 
     /* array layout: [ v[t=0], v[t=-1], ..., v[t=-(ntimes-1)] ] */
     double *outputs; /* Node Outputs */
@@ -108,9 +113,9 @@ RNNLayer *RNNLayer_create(RNNLayer *lprev, int nnodes, int ntimes)
 
     self->nnodes = nnodes;
     self->ntimes = ntimes;
-    int n = self->nnodes * self->ntimes;
-    self->outputs = (double *)calloc_c(n, sizeof(double), &used_memory);
-    self->errors = (double *)calloc_c(n, sizeof(double), &used_memory);
+    int n_seq = self->nnodes * self->ntimes;
+    self->outputs = (double *)calloc_c(n_seq, sizeof(double), &used_memory);
+    self->errors = (double *)calloc_c(n_seq, sizeof(double), &used_memory);
     self->temp = (double *)calloc_c(self->nnodes, sizeof(double), &used_memory);
 
     if (lprev != NULL)
@@ -141,6 +146,35 @@ RNNLayer *RNNLayer_create(RNNLayer *lprev, int nnodes, int ntimes)
     }
 
     return self;
+}
+long int RNNLayer_check_memory(RNNLayer *self, FILE *fp)
+{
+    long size = 0;
+    if (self == NULL)
+        return 0;
+    size += sizeof(RNNLayer); // for RNNlayer itself
+
+    /* nnodes -> layer's node size, ntimes -> rnn layer sequence size */
+    size += self->nnodes * self->ntimes * sizeof(double); // for outputs
+    size += self->nnodes * self->ntimes * sizeof(double); // for errors
+    size += self->nnodes * sizeof(double);                // for temps
+
+    if (self->lprev != NULL)
+    {
+        /* nxweights = lprev->nnodes * self->nnodes */
+        size += self->nxweights * sizeof(double); // for xweights
+        size += self->nxweights * sizeof(double); // for u_xweights
+
+        /* nhweights = self->nnodes * self->nnodes */
+        size += self->nhweights * sizeof(double); // for nhweights
+        size += self->nhweights * sizeof(double); // for u_nhweights
+
+        /* nbiases = self->nnodes */
+        size += self->nbiases * sizeof(double); // for biases
+        size += self->nbiases * sizeof(double); // for u_biases
+    }
+    fprintf(stderr, "size of RNNLayer%d : %ld bytes\n", self->lid, size);
+    return size;
 }
 
 /* RNNLayer_destroy(self)
@@ -560,83 +594,142 @@ void RNNLayer_update(RNNLayer *self, double rate)
 /* main */
 int main(int argc, char *argv[])
 {
-    int ntimes = 5; // rnn 시간 변수
+    /* model variables */
+    int ntimes = MODEL_SEQUNCE;  // rnn sequence
+    double rate = LEARNING_RATE; // learning rate
+    int nepochs = EPOCHS;        // epcohs
+    int minibatch = MINIBATCH;   // minibatch size
 
     /* Use a fixed random seed for debugging. */
-    srand(0);
-    printf("sizeof RNN Layers : %d", sizeof(RNNLayer));
+    srand(1);
+    fprintf(stderr, "\n------ model configuration ------\n");
+    fprintf(stderr, "default size of RNN Layers : %ld\n", sizeof(RNNLayer));
+    fprintf(stderr, "Model Sequence : %d\n", ntimes);
+    fprintf(stderr, "Input Layer Data Size : %d\n", INPUT_LAYER_DATA_SIZE);
+    fprintf(stderr, "Hidden Layer Data Size : %d\n", HIDDEN_LAYER_DATA_SIZE);
+    fprintf(stderr, "Output Layer Data Size : %d\n", OUTPUT_LAYER_DATA_SIZE);
+    fprintf(stderr, "\n------ hyperparamters ------\n");
+    fprintf(stderr, "Learning Rate : %.4f\n", rate);
+    fprintf(stderr, "Epochs : %d\n", nepochs);
+    fprintf(stderr, "Minibatch Size : %d\n", minibatch);
+    fprintf(stderr, "\n------ initialize model ------\n");
+
     /* Initialize layers. */
     RNNLayer *linput = RNNLayer_create(NULL, INPUT_LAYER_DATA_SIZE, ntimes);
-    RNNLayer *lhidden1 = RNNLayer_create(linput, 16, ntimes);
-    RNNLayer *lhidden2 = RNNLayer_create(lhidden1, 16, ntimes);
-    RNNLayer *lhidden3 = RNNLayer_create(lhidden2, 16, ntimes);
-    RNNLayer *loutput = RNNLayer_create(lhidden3, 1, ntimes);
+    RNNLayer *lhidden1 = RNNLayer_create(linput, HIDDEN_LAYER_DATA_SIZE, ntimes);
+    RNNLayer *lhidden2 = RNNLayer_create(lhidden1, HIDDEN_LAYER_DATA_SIZE, ntimes);
+    RNNLayer *lhidden3 = RNNLayer_create(lhidden2, HIDDEN_LAYER_DATA_SIZE, ntimes);
+    RNNLayer *loutput = RNNLayer_create(lhidden3, OUTPUT_LAYER_DATA_SIZE, ntimes);
+
+    /* Check memory of eacy layers */
+    /*
+        레이어 크기는 다음과 같이 할당됩니다.
+        레이어 본인 : sizeof(RNNLayer)
+
+        error : 노드 수 * 시퀀스 수 * sizeof(double)
+        output : 노드 수 * 시퀀스 수 * sizeof(double)
+        temp : 노드 수 * sizeof(double)
+
+        xweights : 이전 레이어 노드 수 * 노드 수 * sizeof(double)
+        u_xweights : 이전 레이어 노드 수 * 노드 수 * sizeof(double)
+
+        hweights : 노드 수 * 노드 수 * sizeof(double)
+        u_hweights : 노드 수 * 노드 수 * sizeof(double)
+
+        biases : 노드 수 * sizeof(double)
+        u_biases : 노드 수 * sizeof(double)
+    */
+    RNNLayer_check_memory(linput, stderr);
+    RNNLayer_check_memory(lhidden1, stderr);
+    RNNLayer_check_memory(lhidden2, stderr);
+    RNNLayer_check_memory(lhidden3, stderr);
+    RNNLayer_check_memory(loutput, stderr);
+
+    fprintf(stderr, "\nUsed Memory : %ld bytes\n\n", used_memory_in_bytes(used_memory));
     RNNLayer_dump(linput, stderr);
     RNNLayer_dump(lhidden1, stderr);
     RNNLayer_dump(lhidden2, stderr);
     RNNLayer_dump(lhidden3, stderr);
     RNNLayer_dump(loutput, stderr);
+    fprintf(stderr, "------ model initialized ------\n");
+
     /* Time Checking*/
     reset_timer(clocks_starts);
-
+    fprintf(stderr, "\n------ train model ------\n");
     /* Run the network. */
-    double rate = 0.005;
-    int nepochs = 1000;
-    for (int n = 0; n < nepochs; n++)
+    for (int n = 0; n < nepochs; n++) // 각 에폭마다 러닝 레이트에 따라 가중치와 편향값 조정
     {
-        int i = rand() % 10000;
-        double x[INPUT_LAYER_DATA_SIZE];
-        double y1[16];
-        double y2[16];
-        double y3[16];
-        double r[1];
+        int i = rand() % 10000;          // 0~9999 사이의 랜덤값을 부여하며, 해당 숫자부터 1에폭간 n개의 데이터를 학습
+        double x[INPUT_LAYER_DATA_SIZE]; // 입력값 배열 => 노드 수에 따라 배열 크기 결정
+        // double y1[HIDDEN_LAYER_DATA_SIZE]; // 중간 output 값 배열 => 노드 수에 따라 배열 크기 결정
+        // double y2[HIDDEN_LAYER_DATA_SIZE]; // 중간 output 값 배열 => 노드 수에 따라 배열 크기 결정
+        // double y3[HIDDEN_LAYER_DATA_SIZE]; // 중간 output 값 배열 => 노드 수에 따라 배열 크기 결정
+        double r[OUTPUT_LAYER_DATA_SIZE]; // 출력값 배열 => 노드 수에 따라 배열 크기 결정
+
+        /* reset previous sequnce outputs */
         RNNLayer_reset(linput);
         RNNLayer_reset(lhidden1);
         RNNLayer_reset(lhidden2);
         RNNLayer_reset(lhidden3);
         RNNLayer_reset(loutput);
         // fprintf(stderr, "reset: i=%d\n", i);
-        for (int j = 0; j < 20; j++)
+
+        /* repeat and learing from i to i + minibatch size => 1epoch  */
+        for (int j = i; j < i + minibatch; j++)
         {
-            int p = f(i);
+            /* get input data */
+            int p = f(j);
+
+            /* data formatting */
             for (int k = 0; k < INPUT_LAYER_DATA_SIZE; k++)
             {
-                x[k] = (k == p) ? 1 : 0;
+                x[k] = (k == p) ? 1 : 0; // data p will formatted with input nodes size
             }
-            r[0] = g(i);                       /* answer */
-            RNNLayer_setInputs(linput, x);     // 순전파 알고리즘 동작
-            RNNLayer_getOutputs(loutput, y1);  // 순전파 알고리즘 동작 후 결과값 저장
-            RNNLayer_getOutputs(loutput, y2);  // 순전파 알고리즘 동작 후 결과값 저장
-            RNNLayer_getOutputs(loutput, y3);  // 순전파 알고리즘 동작 후 결과값 저장
+
+            /* get answer */
+            r[0] = g(j);
+
+            /* learning */
+            RNNLayer_setInputs(linput, x); // 순전파 알고리즘 동작
+            // RNNLayer_getOutputs(lhidden1, y1);  // 순전파 알고리즘 동작 후 결과값 저장
+            // RNNLayer_getOutputs(lhidden2, y2);  // 순전파 알고리즘 동작 후 결과값 저장
+            // RNNLayer_getOutputs(loutput, y3);  // 순전파 알고리즘 동작 후 결과값 저장
             RNNLayer_learnOutputs(loutput, r); // 역전파 알고리즘 동작 => 에러 체크
-            double etotal = RNNLayer_getErrorTotal(loutput);
+
+            // /* check outputs */
+            // double etotal = RNNLayer_getErrorTotal(loutput);
             // fprintf(stderr, "x[%d]=%d, y=%.4f, r=%.4f, etotal=%.4f\n",
-            //         i, p, y1[0], r[0], etotal);
-            // fprintf(stderr, "x[%d]=%d, ", i, p);
-            // for (int i = 0; i < 16; i++)
-            //     fprintf(stderr, "y1[%d]=%.4f, ", i, y1[i]);
-            // for (int i = 0; i < 16; i++)
-            //     fprintf(stderr, "y2[%d]=%.4f, ", i, y2[i]);
-            // for (int i = 0; i < 16; i++)
-            //     fprintf(stderr, "y3[%d]=%.4f, ", i, y3[i]);
+            //         j, p, y1[0], r[0], etotal);
+            // fprintf(stderr, "x[%d]=%d, ", j, p);
+            // for (int k = 0; k < HIDDEN_LAYER_DATA_SIZE; k++)
+            //     fprintf(stderr, "y1[%d]=%.4f, ", k, y1[k]);
+            // for (int k = 0; k < HIDDEN_LAYER_DATA_SIZE; k++)
+            //     fprintf(stderr, "y2[%d]=%.4f, ", k, y2[k]);
+            // for (int k = 0; k < HIDDEN_LAYER_DATA_SIZE; k++)
+            //     fprintf(stderr, "y3[%d]=%.4f, ", k, y3[k]);
             // fprintf(stderr, "r=%.4f, etotal=%.4f\n", r[0], etotal);
-            i++;
         }
         RNNLayer_update(loutput, rate); // 러닝 레이트에 따라 가중치와 편향값 조정
+        if (n % 1000 == 0)
+        {
+            fprintf(stderr, "epoch : %d, check time used..", n);
+            show_elapsed_time_in_sec(clocks_starts);
+        }
     }
 
     /* Time Checking*/
     show_elapsed_time_in_sec(clocks_starts);
-    printf("\nUsed Memory : %ld bytes\n\n", used_memory_in_bytes(used_memory));
+    fprintf(stderr, "\nUsed Memory : %ld bytes\n\n", used_memory_in_bytes(used_memory));
 
-    fprintf(stderr, "Training finished.\n starts dumping and testing...\n");
     /* Dump the finished network. */
-    RNNLayer_dump(linput, stdout);
-    RNNLayer_dump(lhidden1, stdout);
-    RNNLayer_dump(lhidden2, stdout);
-    RNNLayer_dump(lhidden3, stdout);
-    RNNLayer_dump(loutput, stdout);
+    fprintf(stderr, "---------Training finished.---------\n starts dumping and testing...\n");
+    RNNLayer_dump(linput, stderr);
+    RNNLayer_dump(lhidden1, stderr);
+    RNNLayer_dump(lhidden2, stderr);
+    RNNLayer_dump(lhidden3, stderr);
+    RNNLayer_dump(loutput, stderr);
 
+    /* Testing the network with test data sequnce. */
     RNNLayer_reset(linput);
     RNNLayer_reset(lhidden1);
     RNNLayer_reset(lhidden2);
@@ -645,7 +738,7 @@ int main(int argc, char *argv[])
     for (int i = 0; i < 30; i++)
     {
         double x[INPUT_LAYER_DATA_SIZE];
-        double y[1];
+        double y[OUTPUT_LAYER_DATA_SIZE];
         int p = f(i);
         for (int k = 0; k < INPUT_LAYER_DATA_SIZE; k++)
         {
@@ -656,8 +749,37 @@ int main(int argc, char *argv[])
         fprintf(stderr, "x[%d]=%d, y=%.4f, %.4f\n", i, p, y[0], g(i));
     }
 
+    // /* random data test the network. */
+    // fprintf(stderr, "random test\n");
+    // RNNLayer_reset(linput);
+    // RNNLayer_reset(lhidden1);
+    // RNNLayer_reset(lhidden2);
+    // RNNLayer_reset(lhidden3);
+    // RNNLayer_reset(loutput);
+    // double testx[INPUT_LAYER_DATA_SIZE] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    // double testy[OUTPUT_LAYER_DATA_SIZE];
+
+    // int test_i = 0;
+    // while (test_i < 100)
+    // {
+    //     RNNLayer_setInputs(linput, testx);
+    //     RNNLayer_getOutputs(loutput, testy);
+    //     int r = (int)((double)rand()) % 10;
+    //     fprintf(stderr, "r : %d , testx = ", r);
+    //     testx[r] = 1;
+    //     for (int i = 0; i < INPUT_LAYER_DATA_SIZE; i++)
+    //     {
+    //         fprintf(stderr, "%.4f ", testx[i]);
+    //     }
+    //     fprintf(stderr, "\ntest_i : %d testy=%.4f\n", test_i, testy[0]);
+    //     testx[r] = 0;
+    //     test_i++;
+    // }
+
     RNNLayer_destroy(linput);
     RNNLayer_destroy(lhidden1);
+    RNNLayer_destroy(lhidden2);
+    RNNLayer_destroy(lhidden3);
     RNNLayer_destroy(loutput);
     return 0;
 }
