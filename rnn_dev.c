@@ -15,10 +15,10 @@
 
 #define INPUT_LAYER_DATA_SIZE 10
 #define HIDDEN_LAYER_DATA_SIZE 16
-#define OUTPUT_LAYER_DATA_SIZE 10
+#define OUTPUT_LAYER_DATA_SIZE 1
 #define MODEL_SEQUNCE 5
 #define LEARNING_RATE 0.001
-#define EPOCHS 15000
+#define EPOCHS 1000
 #define MINIBATCH 50
 
 static int clocks_starts = 0;
@@ -620,6 +620,12 @@ int main(int argc, char *argv[])
     RNNLayer *lhidden2 = RNNLayer_create(lhidden1, HIDDEN_LAYER_DATA_SIZE, ntimes);
     RNNLayer *lhidden3 = RNNLayer_create(lhidden2, HIDDEN_LAYER_DATA_SIZE, ntimes);
     RNNLayer *loutput = RNNLayer_create(lhidden3, OUTPUT_LAYER_DATA_SIZE, ntimes);
+    fprintf(stderr, "------ model initialized ------\n");
+    RNNLayer_dump(linput, stderr);
+    RNNLayer_dump(lhidden1, stderr);
+    RNNLayer_dump(lhidden2, stderr);
+    RNNLayer_dump(lhidden3, stderr);
+    RNNLayer_dump(loutput, stderr);
 
     /* Check memory of eacy layers */
     /*
@@ -646,12 +652,6 @@ int main(int argc, char *argv[])
     RNNLayer_check_memory(loutput, stderr);
 
     fprintf(stderr, "\nUsed Memory : %ld bytes\n\n", used_memory_in_bytes(used_memory));
-    RNNLayer_dump(linput, stderr);
-    RNNLayer_dump(lhidden1, stderr);
-    RNNLayer_dump(lhidden2, stderr);
-    RNNLayer_dump(lhidden3, stderr);
-    RNNLayer_dump(loutput, stderr);
-    fprintf(stderr, "------ model initialized ------\n");
 
     /* Time Checking*/
     reset_timer(clocks_starts);
@@ -710,6 +710,8 @@ int main(int argc, char *argv[])
             // fprintf(stderr, "r=%.4f, etotal=%.4f\n", r[0], etotal);
         }
         RNNLayer_update(loutput, rate); // 러닝 레이트에 따라 가중치와 편향값 조정
+
+        /* trace status of train */
         if (n % 1000 == 0)
         {
             fprintf(stderr, "epoch : %d, check time used..", n);
